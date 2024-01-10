@@ -13,14 +13,37 @@ public class SpawnGoblin : MonoBehaviour
     // 目标位置（可以是 BG 物体的平面上的任何点）
     public Transform target;
 
+    private Coroutine spawnCoroutine;
+
     void Start()
     {
+        // 检查 Demo 是否激活，如果激活则启动协程
+        if (gameObject.activeSelf)
+        {
+            spawnCoroutine = StartCoroutine(SpawnGoblinRoutine());
+        }
+    }
+
+    void OnEnable()
+    {
         // 启动协程，定期生成 deb_Goblin01
-        StartCoroutine(SpawnGoblinRoutine());
+        spawnCoroutine = StartCoroutine(SpawnGoblinRoutine());
+    }
+
+    void OnDisable()
+    {
+        // 在 Demo 不激活时停止协程
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+        }
     }
 
     IEnumerator SpawnGoblinRoutine()
     {
+        // 等待一帧，确保 Demo 状态已经更新
+        yield return null;
+
         while (true)
         {
             // 生成 deb_Goblin01
@@ -48,9 +71,9 @@ public class SpawnGoblin : MonoBehaviour
     {
         // 获取 BG 物体的平面上的随机点
         Vector3 randomPoint = new Vector3(
-            Random.Range(-9f,9f),
-            transform.position.y+2f,
-            Random.Range(-13f,13f)
+            Random.Range(-9f, 9f),
+            transform.position.y + 2f,
+            Random.Range(-13f, 13f)
         );
 
         return randomPoint;
